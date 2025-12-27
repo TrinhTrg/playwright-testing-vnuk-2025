@@ -113,6 +113,27 @@ export class LoginPage {
     async verifyPageTitle(expectedText: string): Promise<void> {
         await expect(this.page.locator('h1')).toContainText(new RegExp(expectedText, 'i'));
     }
+
+    /**
+     * Verify password field has show password icon
+     */
+    async verifyPasswordFieldHasShowPasswordIcon(): Promise<void> {
+        // Find show password icon near password input field
+        // Common patterns: button/icon with class containing "show", "eye", "toggle", "password"
+        const showPasswordIcon = this.page.locator('#password').locator('..').locator('button[class*="show" i], button[class*="eye" i], button[class*="toggle" i]').or(
+            this.page.locator('#password').locator('..').locator('[class*="show-password" i], [class*="eye" i], [class*="toggle-password" i]').or(
+                this.page.locator('button[aria-label*="show" i][aria-label*="password" i]').or(
+                    this.page.locator('button[title*="show" i][title*="password" i]').or(
+                        this.page.locator('//button[contains(@aria-label, "show") and contains(@aria-label, "password")]').or(
+                            this.page.locator('//button[contains(@title, "show") and contains(@title, "password")]')
+                        )
+                    )
+                )
+            )
+        );
+        await showPasswordIcon.waitFor({ state: 'visible', timeout: 10000 });
+        expect(await showPasswordIcon.isVisible()).toBeTruthy();
+    }
 }
 
 export default LoginPage;
